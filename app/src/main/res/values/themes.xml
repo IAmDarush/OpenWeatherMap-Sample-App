@@ -13,4 +13,13 @@
     <item name="android:statusBarColor">?attr/colorPrimaryVariant</item>
     <!-- Customize your theme here. -->
   </style>
+
+  <style name="Theme.DariushSampleApp.NoActionBar">
+    <item name="windowActionBar">false</item>
+    <item name="windowNoTitle">true</item>
+  </style>
+
+  <style name="Theme.DariushSampleApp.AppBarOverlay" parent="ThemeOverlay.AppCompat.Dark.ActionBar" />
+
+  <style name="Theme.DariushSampleApp.PopupOverlay" parent="ThemeOverlay.AppCompat.Light" />
 </resources>
