@@ -87,6 +87,7 @@ class SearchViewModelTest {
       vm.uiState.value?.isLoading shouldBe true
       vm.uiState.value?.searchText shouldBe dummySearchQuery
       vm.uiState.value?.weatherDataModel shouldBe null
+      vm.uiState.value?.keyValueList shouldBe mapOf()
 
       advanceTimeBy(2001)
 

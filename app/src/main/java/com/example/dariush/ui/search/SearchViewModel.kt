@@ -51,7 +51,8 @@ class SearchViewModel @Inject constructor(
             _uiState.value = _uiState.value?.copy(
               isLoading = true,
               searchText = event.query,
-              weatherDataModel = null
+              weatherDataModel = null,
+              keyValueList = mapOf()
             )
             viewModelScope.launch {
               when (val result = weatherRepository.fetchLocationData(event.query)) {

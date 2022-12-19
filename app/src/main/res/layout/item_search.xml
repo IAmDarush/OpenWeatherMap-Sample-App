@@ -17,7 +17,7 @@
 
     <TextView
       android:id="@+id/tvKey"
-      android:layout_width="204dp"
+      android:layout_width="0dp"
       android:layout_height="match_parent"
       android:gravity="center_vertical"
       android:text="@{ viewModel.key }"
@@ -28,8 +28,10 @@
       tools:text="key" />
 
     <TextView
+      android:lines="1"
+      android:ellipsize="end"
       android:id="@+id/tvValue"
-      android:layout_width="204dp"
+      android:layout_width="0dp"
       android:layout_height="match_parent"
       android:gravity="center_vertical"
       android:text="@{ viewModel.valueString }"
