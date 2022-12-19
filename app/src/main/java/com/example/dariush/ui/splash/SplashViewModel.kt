@@ -2,8 +2,9 @@ package com.example.dariush.ui.splash
 
 import androidx.lifecycle.MutableLiveData
 import androidx.lifecycle.viewModelScope
+import com.example.dariush.data.model.WeatherResponseModel
 import com.example.dariush.data.remote.WeatherRepository
-import com.example.dariush.data.succeeded
+import com.example.dariush.data.Result
 import com.example.dariush.ui.base.BaseViewModel
 import dagger.hilt.android.lifecycle.HiltViewModel
 import kotlinx.coroutines.ObsoleteCoroutinesApi
@@ -17,23 +18,29 @@ class SplashViewModel @Inject constructor(
 ) : BaseViewModel<SplashViewModel.Event, SplashViewModel.UiState>() {
 
   data class UiState(
-    val isLoading: Boolean = false
+    val isLoading: Boolean = false,
+    val defaultWeatherData: WeatherResponseModel? = null
   )
 
-  sealed class Event {}
+  sealed class Event {
+    object NavigateToSearchScreen : Event()
+  }
 
   override val _uiState = MutableLiveData(UiState(isLoading = true))
 
   init {
 
     viewModelScope.launch {
-      val result = weatherRepository.fetchLocationData("Istanbul")
-      when (result.succeeded) {
-        true  -> {
+      when (val result = weatherRepository.fetchLocationData("Istanbul")) {
+        is Result.Success -> {
+          _uiState.value = _uiState.value?.copy(isLoading = false, defaultWeatherData = result.data)
+          sendEvent(Event.NavigateToSearchScreen)
+        }
+        is Result.Error   -> {
           TODO("unimplemented")
         }
-        false -> {
-          TODO("unimplemented")
+        Result.Loading    -> {
+          _uiState.value = _uiState.value?.copy(isLoading = true)
         }
       }
     }
