@@ -1,6 +1,7 @@
 package com.example.dariush.data.model
 
 import com.google.gson.annotations.SerializedName
+import java.io.Serializable
 
 data class WeatherResponseModel(
   @SerializedName("coord") var coord: Coord? = Coord(),
@@ -16,19 +17,19 @@ data class WeatherResponseModel(
   @SerializedName("id") var id: Int? = null,
   @SerializedName("name") var name: String? = null,
   @SerializedName("cod") var cod: Int? = null
-)
+) : Serializable
 
 data class Coord(
   @SerializedName("lon") var lon: Double? = null,
   @SerializedName("lat") var lat: Double? = null
-)
+) : Serializable
 
 data class Weather(
   @SerializedName("id") var id: Int? = null,
   @SerializedName("main") var main: String? = null,
   @SerializedName("description") var description: String? = null,
   @SerializedName("icon") var icon: String? = null
-)
+) : Serializable
 
 data class Main(
   @SerializedName("temp") var temp: Double? = null,
@@ -37,16 +38,16 @@ data class Main(
   @SerializedName("temp_max") var tempMax: Double? = null,
   @SerializedName("pressure") var pressure: Int? = null,
   @SerializedName("humidity") var humidity: Int? = null
-)
+) : Serializable
 
 data class Wind(
   @SerializedName("speed") var speed: Double? = null,
   @SerializedName("deg") var deg: Int? = null
-)
+) : Serializable
 
 data class Clouds(
   @SerializedName("all") var all: Int? = null
-)
+) : Serializable
 
 
 data class Sys(
@@ -55,4 +56,4 @@ data class Sys(
   @SerializedName("country") var country: String? = null,
   @SerializedName("sunrise") var sunrise: Int? = null,
   @SerializedName("sunset") var sunset: Int? = null
-)
+) : Serializable
