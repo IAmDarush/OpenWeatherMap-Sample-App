@@ -1,7 +1,10 @@
 package com.example.dariush.data.remote
 
 import com.example.dariush.data.Result
+import com.example.dariush.data.model.ApiErrorResponse
 import com.example.dariush.data.model.WeatherResponseModel
+import com.google.gson.Gson
+import com.google.gson.reflect.TypeToken
 import kotlinx.coroutines.CoroutineDispatcher
 import kotlinx.coroutines.Dispatchers
 import kotlinx.coroutines.withContext
@@ -20,7 +23,11 @@ class WeatherRepositoryImpl @Inject constructor(
         if (response.isSuccessful && body != null) {
           Result.Success(body)
         } else {
-          Result.Error(Exception(response.errorBody().toString()))
+          val gson = Gson()
+          val type = object : TypeToken<ApiErrorResponse>() {}.type
+          val errorResponse: ApiErrorResponse? =
+            gson.fromJson(response.errorBody()?.charStream(), type)
+          Result.Error(Exception(errorResponse?.message))
         }
       } catch (e: Exception) {
         Result.Error(e)
