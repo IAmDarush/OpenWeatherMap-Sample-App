@@ -19,7 +19,7 @@ data class WeatherResponseModel(
   @SerializedName("cod") var cod: Int? = null
 ) : Serializable {
 
-  fun getFlattenedList(): Map<String, Any?> {
+  fun getFlattenedMap(): Map<String, Any?> {
     return mutableMapOf(
       "coord" to coord,
       "weather" to weather,

@@ -45,7 +45,7 @@ class SearchViewModelTest {
   @Test
   fun `Given the search screen is opened, When preloaded data is available, Then show the data`() {
     val dummyWeatherData = WeatherResponseModel(name = "Istanbul")
-    val keyValueList = dummyWeatherData.getFlattenedList()
+    val keyValueList = dummyWeatherData.getFlattenedMap()
     mockSavedStateHandle[KEY_WEATHER_DATA] = dummyWeatherData
     val vm = SearchViewModel(mockSavedStateHandle, mockWeatherRepository)
 
@@ -75,6 +75,7 @@ class SearchViewModelTest {
     runTest {
       val dummySearchQuery = "New York"
       val dummyWeatherData = WeatherResponseModel(name = dummySearchQuery)
+      val dummyKeyValueMap = dummyWeatherData.getFlattenedMap()
       mockWeatherRepository.apply {
         coEvery { fetchLocationData(dummySearchQuery) } coAnswers {
           delay(2000)
@@ -92,6 +93,7 @@ class SearchViewModelTest {
       vm.uiState.value?.isLoading shouldBe false
       vm.uiState.value?.searchText shouldBe dummySearchQuery
       vm.uiState.value?.weatherDataModel shouldBe dummyWeatherData
+      vm.uiState.value?.keyValueList?.shouldContainAll(dummyKeyValueMap)
       coVerify {
         mockWeatherRepository.fetchLocationData(dummySearchQuery)
       }

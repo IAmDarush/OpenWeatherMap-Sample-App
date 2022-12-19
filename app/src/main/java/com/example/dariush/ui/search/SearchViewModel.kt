@@ -40,7 +40,7 @@ class SearchViewModel @Inject constructor(
         isLoading = false,
         searchText = model.name.orEmpty(),
         weatherDataModel = model,
-        keyValueList = model.getFlattenedList()
+        keyValueList = model.getFlattenedMap()
       )
     }
 
@@ -59,7 +59,8 @@ class SearchViewModel @Inject constructor(
                   _uiState.value = _uiState.value?.copy(
                     isLoading = false,
                     searchText = event.query,
-                    weatherDataModel = result.data
+                    weatherDataModel = result.data,
+                    keyValueList = result.data.getFlattenedMap()
                   )
                 }
                 is Result.Error   -> TODO("not implemented")
