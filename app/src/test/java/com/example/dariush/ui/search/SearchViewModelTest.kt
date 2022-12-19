@@ -7,6 +7,7 @@ import com.example.dariush.data.model.WeatherResponseModel
 import com.example.dariush.data.remote.WeatherRepository
 import io.kotest.matchers.shouldBe
 import io.mockk.MockKAnnotations
+import io.mockk.coVerify
 import io.mockk.impl.annotations.MockK
 import kotlinx.coroutines.ExperimentalCoroutinesApi
 import kotlinx.coroutines.ObsoleteCoroutinesApi
@@ -43,6 +44,21 @@ class SearchViewModelTest {
     vm.uiState.value?.searchText shouldBe dummyWeatherData.name
     vm.uiState.value?.weatherDataModel shouldBe dummyWeatherData
     vm.uiState.value?.isLoading shouldBe false
+  }
+
+  @Test
+  fun `Given the user wants to perform a search, Then query the searched weather data`() {
+    val vm = SearchViewModel(mockSavedStateHandle, mockWeatherRepository)
+
+    val dummySearchQuery = "New York"
+    vm.search(dummySearchQuery)
+
+    vm.uiState.value?.isLoading shouldBe true
+    vm.uiState.value?.searchText shouldBe dummySearchQuery
+    vm.uiState.value?.weatherDataModel shouldBe null
+    coVerify {
+      mockWeatherRepository.fetchLocationData(dummySearchQuery)
+    }
   }
 
 }
