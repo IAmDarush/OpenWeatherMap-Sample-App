@@ -7,6 +7,7 @@ import com.google.gson.Gson
 import com.google.gson.reflect.TypeToken
 import kotlinx.coroutines.CoroutineDispatcher
 import kotlinx.coroutines.Dispatchers
+import kotlinx.coroutines.delay
 import kotlinx.coroutines.withContext
 import javax.inject.Inject
 
@@ -17,6 +18,7 @@ class WeatherRepositoryImpl @Inject constructor(
 
   override suspend fun fetchLocationData(location: String): Result<WeatherResponseModel> =
     withContext(dispatcher) {
+      delay(2000)
       try {
         val response = weatherAPiService.getCurrentWeather(location)
         val body = response.body()
