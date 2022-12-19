@@ -52,8 +52,14 @@ class SearchViewModel @Inject constructor(
               weatherDataModel = null
             )
             viewModelScope.launch {
-              when (weatherRepository.fetchLocationData(event.query)) {
-                is Result.Success -> TODO("not implemented")
+              when (val result = weatherRepository.fetchLocationData(event.query)) {
+                is Result.Success -> {
+                  _uiState.value = _uiState.value?.copy(
+                    isLoading = false,
+                    searchText = event.query,
+                    weatherDataModel = result.data
+                  )
+                }
                 is Result.Error   -> TODO("not implemented")
                 Result.Loading    -> TODO("not implemented")
               }
