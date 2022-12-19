@@ -3,12 +3,15 @@ package com.example.dariush.di
 import android.app.Application
 import com.example.dariush.BuildConfig
 import com.example.dariush.data.remote.WeatherRepository
+import com.example.dariush.data.remote.WeatherApiService
+import com.example.dariush.data.remote.WeatherRepositoryImpl
 import com.google.gson.Gson
 import com.google.gson.GsonBuilder
 import dagger.Module
 import dagger.Provides
 import dagger.hilt.InstallIn
 import dagger.hilt.components.SingletonComponent
+import kotlinx.coroutines.Dispatchers
 import okhttp3.Cache
 import okhttp3.OkHttpClient
 import okhttp3.logging.HttpLoggingInterceptor
@@ -21,7 +24,7 @@ import javax.inject.Singleton
 @InstallIn(SingletonComponent::class)
 object NetworkModule {
 
-  private const val BASE_URL: String = "http://api.openweathermap.org"
+  private const val BASE_URL: String = "https://api.openweathermap.org"
   private const val HTTP_WRITE_TIMEOUT = 20
   private const val HTTP_READ_TIMEOUT = 20
   private const val HTTP_CONNECT_TIMEOUT = 20
@@ -79,8 +82,14 @@ object NetworkModule {
 
   @Provides
   @Singleton
-  fun providesWeatherRepository(): WeatherRepository {
-    TODO("unimplemented")
+  fun provideWeatherApiService(retrofit: Retrofit): WeatherApiService {
+    return retrofit.create(WeatherApiService::class.java)
+  }
+
+  @Provides
+  @Singleton
+  fun providesWeatherRepository(weatherApiService: WeatherApiService): WeatherRepository {
+    return WeatherRepositoryImpl(Dispatchers.IO, weatherApiService)
   }
 
 }
