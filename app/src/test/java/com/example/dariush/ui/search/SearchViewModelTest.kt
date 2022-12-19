@@ -6,6 +6,7 @@ import com.example.dariush.base.MainCoroutineRule
 import com.example.dariush.data.Result
 import com.example.dariush.data.model.WeatherResponseModel
 import com.example.dariush.data.remote.WeatherRepository
+import io.kotest.matchers.maps.shouldContainAll
 import io.kotest.matchers.shouldBe
 import io.mockk.MockKAnnotations
 import io.mockk.coEvery
@@ -44,12 +45,14 @@ class SearchViewModelTest {
   @Test
   fun `Given the search screen is opened, When preloaded data is available, Then show the data`() {
     val dummyWeatherData = WeatherResponseModel(name = "Istanbul")
+    val keyValueList = dummyWeatherData.getFlattenedList()
     mockSavedStateHandle[KEY_WEATHER_DATA] = dummyWeatherData
     val vm = SearchViewModel(mockSavedStateHandle, mockWeatherRepository)
 
     vm.uiState.value?.searchText shouldBe dummyWeatherData.name
     vm.uiState.value?.weatherDataModel shouldBe dummyWeatherData
     vm.uiState.value?.isLoading shouldBe false
+    vm.uiState.value?.keyValueList?.shouldContainAll(keyValueList)
   }
 
   @Test

@@ -24,7 +24,8 @@ class SearchViewModel @Inject constructor(
   data class UiState(
     val isLoading: Boolean = false,
     val searchText: String = "",
-    val weatherDataModel: WeatherResponseModel? = null
+    val weatherDataModel: WeatherResponseModel? = null,
+    val keyValueList: Map<String, Any?> = mapOf()
   )
 
   sealed class Event {
@@ -38,7 +39,8 @@ class SearchViewModel @Inject constructor(
       _uiState.value = _uiState.value?.copy(
         isLoading = false,
         searchText = model.name.orEmpty(),
-        weatherDataModel = model
+        weatherDataModel = model,
+        keyValueList = model.getFlattenedList()
       )
     }
 

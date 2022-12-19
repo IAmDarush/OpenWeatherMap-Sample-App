@@ -4,7 +4,7 @@ import com.google.gson.annotations.SerializedName
 import java.io.Serializable
 
 data class WeatherResponseModel(
-  @SerializedName("coord") var coord: Coord? = Coord(),
+  @SerializedName("coord") val coord: Coord? = Coord(),
   @SerializedName("weather") var weather: ArrayList<Weather> = arrayListOf(),
   @SerializedName("base") var base: String? = null,
   @SerializedName("main") var main: Main? = Main(),
@@ -17,7 +17,28 @@ data class WeatherResponseModel(
   @SerializedName("id") var id: Int? = null,
   @SerializedName("name") var name: String? = null,
   @SerializedName("cod") var cod: Int? = null
-) : Serializable
+) : Serializable {
+
+  fun getFlattenedList(): Map<String, Any?> {
+    return mutableMapOf(
+      "coord" to coord,
+      "weather" to weather,
+      "base" to base,
+      "main" to main,
+      "visibility" to visibility,
+      "wind" to wind,
+      "clouds" to clouds,
+      "dt" to dt,
+      "sys" to sys,
+      "timezone" to timezone,
+      "id" to id,
+      "name" to name,
+      "cod" to cod
+    )
+  }
+
+}
+
 
 data class Coord(
   @SerializedName("lon") var lon: Double? = null,
