@@ -1,6 +1,7 @@
 package com.example.dariush.ui.splash
 
 import android.os.Bundle
+import android.widget.Toast
 import androidx.activity.viewModels
 import androidx.appcompat.app.AppCompatActivity
 import androidx.lifecycle.Lifecycle
@@ -30,6 +31,9 @@ class SplashActivity : AppCompatActivity() {
           when (event) {
             is SplashViewModel.Event.NavigateToSearchScreen -> {
               TODO("Navigate to search screen")
+            }
+            is SplashViewModel.Event.NetworkError           -> {
+              Toast.makeText(this@SplashActivity, event.errorMessage, Toast.LENGTH_SHORT).show()
             }
           }
         }

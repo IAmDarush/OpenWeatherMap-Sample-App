@@ -2,9 +2,9 @@ package com.example.dariush.ui.splash
 
 import androidx.lifecycle.MutableLiveData
 import androidx.lifecycle.viewModelScope
+import com.example.dariush.data.Result
 import com.example.dariush.data.model.WeatherResponseModel
 import com.example.dariush.data.remote.WeatherRepository
-import com.example.dariush.data.Result
 import com.example.dariush.ui.base.BaseViewModel
 import dagger.hilt.android.lifecycle.HiltViewModel
 import kotlinx.coroutines.ObsoleteCoroutinesApi
@@ -23,6 +23,7 @@ class SplashViewModel @Inject constructor(
   )
 
   sealed class Event {
+    data class NetworkError(val errorMessage: String) : Event()
     object NavigateToSearchScreen : Event()
   }
 
@@ -37,21 +38,16 @@ class SplashViewModel @Inject constructor(
           sendEvent(Event.NavigateToSearchScreen)
         }
         is Result.Error   -> {
-          TODO("unimplemented")
+          _uiState.value = _uiState.value?.copy(isLoading = false)
+          val message = result.exception.message ?: "Network error! Please try again."
+          sendEvent(Event.NetworkError(message))
         }
         Result.Loading    -> {
           _uiState.value = _uiState.value?.copy(isLoading = true)
         }
       }
     }
-
-    viewModelScope.launch {
-      eventsFlow.collect { event ->
-        when (event) {
-          else -> {}
-        }
-      }
-    }
+    
   }
 
 }

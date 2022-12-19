@@ -66,17 +66,42 @@ class SplashViewModelTest {
           events.add(event)
         }
       }
+      vm.uiState.value?.isLoading shouldBe true
 
       advanceTimeBy(2001)
 
       vm.uiState.value?.defaultWeatherData shouldBe dummyResponse
+      vm.uiState.value?.isLoading shouldBe false
       events shouldContain SplashViewModel.Event.NavigateToSearchScreen
       eventsJob.cancel()
     }
 
   @Test
-  fun `Given weather data is fetching, When fetch fails, Then show error and exit the app`() {
-    TODO("unimplemented")
+  fun `Given weather data is fetching, When fetch fails, Then show error and exit the app`() = runTest {
+    val defaultLocation = "Istanbul"
+    val dummyErrorMessage = "some error"
+    val dummyError = Exception(dummyErrorMessage)
+    mockWeatherRepository.apply {
+      coEvery { fetchLocationData(defaultLocation) } coAnswers {
+        delay(2000)
+        Result.Error(dummyError)
+      }
+    }
+    val events = mutableListOf<SplashViewModel.Event>()
+    val vm = SplashViewModel(mockWeatherRepository)
+    val eventsJob = launch(UnconfinedTestDispatcher(testScheduler)) {
+      vm.eventsFlow.collect { event ->
+        events.add(event)
+      }
+    }
+    vm.uiState.value?.isLoading shouldBe true
+
+    advanceTimeBy(2001)
+
+    vm.uiState.value?.defaultWeatherData shouldBe null
+    vm.uiState.value?.isLoading shouldBe false
+    events shouldContain SplashViewModel.Event.NetworkError(dummyErrorMessage)
+    eventsJob.cancel()
   }
 
 }
