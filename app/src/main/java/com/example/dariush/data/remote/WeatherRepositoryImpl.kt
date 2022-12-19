@@ -1,9 +1,13 @@
 package com.example.dariush.data.remote
 
 import com.example.dariush.data.Result
+import com.example.dariush.data.model.ApiErrorResponse
 import com.example.dariush.data.model.WeatherResponseModel
+import com.google.gson.Gson
+import com.google.gson.reflect.TypeToken
 import kotlinx.coroutines.CoroutineDispatcher
 import kotlinx.coroutines.Dispatchers
+import kotlinx.coroutines.delay
 import kotlinx.coroutines.withContext
 import javax.inject.Inject
 
@@ -14,13 +18,18 @@ class WeatherRepositoryImpl @Inject constructor(
 
   override suspend fun fetchLocationData(location: String): Result<WeatherResponseModel> =
     withContext(dispatcher) {
+      delay(2000)
       try {
         val response = weatherAPiService.getCurrentWeather(location)
         val body = response.body()
         if (response.isSuccessful && body != null) {
           Result.Success(body)
         } else {
-          Result.Error(Exception(response.errorBody().toString()))
+          val gson = Gson()
+          val type = object : TypeToken<ApiErrorResponse>() {}.type
+          val errorResponse: ApiErrorResponse? =
+            gson.fromJson(response.errorBody()?.charStream(), type)
+          Result.Error(Exception(errorResponse?.message))
         }
       } catch (e: Exception) {
         Result.Error(e)

@@ -1,5 +1,6 @@
 package com.example.dariush.ui.splash
 
+import android.content.Intent
 import android.os.Bundle
 import android.widget.Toast
 import androidx.activity.viewModels
@@ -8,7 +9,10 @@ import androidx.lifecycle.Lifecycle
 import androidx.lifecycle.lifecycleScope
 import androidx.lifecycle.repeatOnLifecycle
 import com.example.dariush.databinding.ActivitySplashBinding
+import com.example.dariush.ui.search.KEY_WEATHER_DATA
+import com.example.dariush.ui.search.SearchActivity
 import dagger.hilt.android.AndroidEntryPoint
+import kotlinx.coroutines.ObsoleteCoroutinesApi
 import kotlinx.coroutines.launch
 
 @AndroidEntryPoint
@@ -30,7 +34,7 @@ class SplashActivity : AppCompatActivity() {
         viewModel.eventsFlow.collect { event ->
           when (event) {
             is SplashViewModel.Event.NavigateToSearchScreen -> {
-              TODO("Navigate to search screen")
+              navigateToSearchActivity()
             }
             is SplashViewModel.Event.NetworkError           -> {
               Toast.makeText(this@SplashActivity, event.errorMessage, Toast.LENGTH_SHORT).show()
@@ -40,6 +44,18 @@ class SplashActivity : AppCompatActivity() {
       }
     }
 
+  }
+
+  @OptIn(ObsoleteCoroutinesApi::class)
+  private fun navigateToSearchActivity() {
+    val bundle = Bundle().apply {
+      putSerializable(KEY_WEATHER_DATA, viewModel.uiState.value?.defaultWeatherData)
+    }
+    val intent = Intent(this, SearchActivity::class.java).apply {
+      putExtras(bundle)
+    }
+    startActivity(intent)
+    finish()
   }
 
 }
