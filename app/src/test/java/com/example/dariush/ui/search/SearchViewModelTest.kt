@@ -6,6 +6,7 @@ import com.example.dariush.base.MainCoroutineRule
 import com.example.dariush.data.Result
 import com.example.dariush.data.model.WeatherResponseModel
 import com.example.dariush.data.remote.WeatherRepository
+import io.kotest.matchers.collections.shouldContain
 import io.kotest.matchers.maps.shouldContainAll
 import io.kotest.matchers.shouldBe
 import io.mockk.MockKAnnotations
@@ -15,6 +16,8 @@ import io.mockk.impl.annotations.MockK
 import kotlinx.coroutines.ExperimentalCoroutinesApi
 import kotlinx.coroutines.ObsoleteCoroutinesApi
 import kotlinx.coroutines.delay
+import kotlinx.coroutines.launch
+import kotlinx.coroutines.test.UnconfinedTestDispatcher
 import kotlinx.coroutines.test.advanceTimeBy
 import kotlinx.coroutines.test.runTest
 import org.junit.Before
@@ -103,7 +106,37 @@ class SearchViewModelTest {
   @Test
   fun `Given the user has performed the search, When the weather data is return fails, Then show the error message`() =
     runTest {
-      TODO("not implemented")
+      val dummySearchQuery = "New York"
+      val errorMessage = "dummy error message"
+      val error = Exception(errorMessage)
+      mockWeatherRepository.apply {
+        coEvery { fetchLocationData(dummySearchQuery) } coAnswers {
+          delay(2000)
+          Result.Error(error)
+        }
+      }
+      val events = mutableListOf<SearchViewModel.Event>()
+      val vm = SearchViewModel(mockSavedStateHandle, mockWeatherRepository)
+      val eventsJob = launch(UnconfinedTestDispatcher(testScheduler)) {
+        vm.eventsFlow.collect { event -> events.add(event) }
+      }
+      vm.search(dummySearchQuery)
+      vm.uiState.value?.isLoading shouldBe true
+      vm.uiState.value?.searchText shouldBe dummySearchQuery
+      vm.uiState.value?.weatherDataModel shouldBe null
+      vm.uiState.value?.keyValueList shouldBe mapOf()
+
+      advanceTimeBy(2001)
+
+      vm.uiState.value?.isLoading shouldBe false
+      vm.uiState.value?.searchText shouldBe dummySearchQuery
+      vm.uiState.value?.weatherDataModel shouldBe null
+      vm.uiState.value?.keyValueList shouldBe mapOf()
+      coVerify {
+        mockWeatherRepository.fetchLocationData(dummySearchQuery)
+      }
+      events.shouldContain(SearchViewModel.Event.SearchError(errorMessage))
+      eventsJob.cancel()
     }
 
 }

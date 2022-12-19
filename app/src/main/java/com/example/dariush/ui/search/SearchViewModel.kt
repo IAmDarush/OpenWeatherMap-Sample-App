@@ -30,6 +30,7 @@ class SearchViewModel @Inject constructor(
 
   sealed class Event {
     data class Search(val query: String) : Event()
+    data class SearchError(val errorMessage: String) : Event()
   }
 
   override val _uiState = MutableLiveData(UiState(isLoading = true))
@@ -64,11 +65,21 @@ class SearchViewModel @Inject constructor(
                     keyValueList = result.data.getFlattenedMap()
                   )
                 }
-                is Result.Error   -> TODO("not implemented")
+                is Result.Error   -> {
+                  _uiState.value = _uiState.value?.copy(
+                    isLoading = false,
+                    searchText = event.query,
+                    weatherDataModel = null,
+                    keyValueList = mapOf()
+                  )
+                  val errorMessage = result.exception.message ?: "Invalid query! Please try another one."
+                  sendEvent(Event.SearchError(errorMessage))
+                }
                 Result.Loading    -> TODO("not implemented")
               }
             }
           }
+          else            -> {}
         }
       }
     }
